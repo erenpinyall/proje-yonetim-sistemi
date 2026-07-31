@@ -1,0 +1,14 @@
+**/.class
+**/.dockerignore
+**/.env
+**/.git
+**/.gitignore
+**/.vs/
+**/bin/
+**/obj/
+**/node_modules/
+**/logs/
+**/.DS_Store
+**/*.user
+**/.store/
+**/appsettings.Development.json
