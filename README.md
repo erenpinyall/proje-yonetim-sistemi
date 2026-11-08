@@ -1,175 +1,276 @@
+<div align="center">
+
 # Nabız
 
-![Nabız demo panosu](docs/preview.webp)
+**Küçük ekipler için gerçek zamanlı proje ve görev panosu.**
 
-> **Not:** Bu proje hâlâ geliştirme aşamasındadır.
+ASP.NET Core 10 · Clean Architecture · EF Core · SignalR · React 19 · TypeScript
 
-**Nabız**, küçük ekipler için canlı bir proje ve görev panosudur. **ASP.NET Core Web API (.NET 10)** ile **Clean Architecture** prensiplerine uygun olarak geliştirilmiş, **React + Vite** frontend'e sahiptir.
+[![CI](https://github.com/erenpinyall/proje-yonetim-sistemi/actions/workflows/ci.yml/badge.svg)](https://github.com/erenpinyall/proje-yonetim-sistemi/actions/workflows/ci.yml)
+[![.NET](https://img.shields.io/badge/.NET-10-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com)
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org)
+[![Docker](https://img.shields.io/badge/Docker-ready-2496ED?logo=docker&logoColor=white)](https://www.docker.com)
 
-> Kod içindeki `TaskTracker.*` namespace ve proje adları geriye dönük uyumluluk için korunmuştur; kullanıcıya görünen ürün adı **Nabız**'dır.
+[Canlı demo](https://nabiz-demo.vercel.app/demo) · [Özellikler](#özellikler) · [Mimari](#mimari) · [Kurulum](#kurulum) · [API](#api)
 
-## Tech Stack
+<img src="./docs/preview.webp" alt="Nabız kanban panosu" width="920" />
 
-- **ASP.NET Core Web API** - RESTful API
-- **Entity Framework Core** - ORM (PostgreSQL)
-- **JWT Authentication** - Token tabanlı kimlik doğrulama
-- **AutoMapper** - DTO dönüşümleri
-- **FluentValidation** - Input validasyonu
-- **Swagger / OpenAPI** - API dokümantasyonu
-- **SignalR** - Gerçek zamanlı bildirimler
-- **Docker** - Containerize dağıtım
-- **React + Vite + TypeScript** - Modern SPA frontend
+</div>
 
-## Mimari (Clean Architecture)
+> [!NOTE]
+> Vercel'deki demo tarayıcıda çalışır; örnek veriler `localStorage` içinde tutulur ve canlı akış simüle edilir. Gerçek API, PostgreSQL ve SignalR akışı için [kurulum](#kurulum) bölümüne bakın.
 
-```
-TaskTracker.API           → Controller'lar, Program.cs, SignalR Hub
-TaskTracker.Application    → DTO'lar, Interface'ler, Validator'lar, AutoMapper Profilleri
-TaskTracker.Domain         → Entity'ler, Enum'lar
-TaskTracker.Infrastructure → DbContext, Entity Konfigürasyonları, Servis Implementasyonları
-client                    → React + Vite + TypeScript frontend
-```
+## Nabız nedir?
 
-### Bağımlılık Akışı
+Nabız, küçük ekiplerin projelerini ve görevlerini tek bir kanban panosunda yönetmesini sağlayan full-stack bir uygulamadır. Backend **ASP.NET Core 10** üzerinde **Clean Architecture** katmanlarıyla, frontend ise **React + Vite + TypeScript** ile geliştirildi.
 
-```
-API → Application → Domain
-API → Infrastructure → Application → Domain
-Frontend (React) → API (REST + SignalR)
-```
+Ürün adı **Nabız**; koddaki `TaskTracker.*` namespace ve proje adları geriye dönük uyumluluk için korunmuştur.
 
 ## Özellikler
 
-### Kimlik Doğrulama
-- JWT ile kullanıcı kayıt & giriş
-- BCrypt ile şifre hashleme
+| Alan | Neler var? |
+| --- | --- |
+| **Kanban** | Yapılacak / Devam Ediyor / Tamamlandı kolonları, kart detayı, durum ve öncelik değiştirme |
+| **Görevler** | Oluşturma, düzenleme, silme, üyeye atama, filtreleme, sayfalama ve sıralama |
+| **Ekip** | Proje üyeliği, Yönetici/Üye rolleri, e-posta ile davet, üye çıkarma |
+| **Yorumlar** | Görev yorumları; kullanıcı yalnızca kendi yorumunu silebilir |
+| **Gerçek zamanlı** | SignalR ile görev ve yorum olaylarında anlık bildirim |
+| **Kimlik doğrulama** | JWT, BCrypt şifre hashleme, korumalı endpointler |
+| **API** | FluentValidation, AutoMapper, Swagger/OpenAPI, tutarlı hata yanıtları |
+| **Dağıtım** | Docker Compose ile API + PostgreSQL; Vercel'de demo build |
 
-### Projeler
-- Proje oluşturma, listeleme, detay görüntüleme, silme
-- Rol tabanlı üye ekleme/çıkarma (Yönetici/Üye)
-- Sayfalama, arama ve sıralama
+## Tech Stack
 
-### Görevler
-- Görev oluşturma, güncelleme, silme (Yapılacak / Devam Ediyor / Tamamlandı)
-- Proje üyelerine görev atama
-- Öncelik seviyeleri (Düşük / Orta / Yüksek)
-- Filtreleme, sayfalama ve sıralama
+| Katman | Teknolojiler |
+| --- | --- |
+| **Backend** | ASP.NET Core 10, C# 14, Clean Architecture |
+| **Veri** | Entity Framework Core 10, Npgsql, PostgreSQL 17 |
+| **Kimlik & gerçek zamanlı** | JWT Bearer, BCrypt.Net, SignalR |
+| **Doğrulama & eşleme** | FluentValidation, AutoMapper |
+| **Frontend** | React 19, Vite 8, TypeScript 6, React Router 7 |
+| **Altyapı** | Docker, Docker Compose, Vercel (demo) |
+| **Dokümantasyon** | Swagger / OpenAPI |
 
-### Yorumlar
-- Görevlere yorum ekleme
-- Kendi yorumlarını silme
+## Mimari
 
-### Gerçek Zamanlı (SignalR)
-- Görev oluşturma/güncelleme/silme anında bildirim
-- Yorum eklendiğinde anlık uyarı
+```mermaid
+flowchart LR
+  subgraph Client["client · React + Vite"]
+    UI[Sayfalar & bileşenler]
+    REST[REST istemcisi]
+    SR[SignalR hook]
+  end
 
-### Frontend (React)
-- Kayıt / Giriş ekranı
-- Proje listesi (dashboard) ve istatistikler
-- Kanban tarzı görev panosu (duruma göre kolonlar)
-- Görev detayı: durum/öncelik/atanan kişi değiştirme
-- Üye yönetimi (ekleme/çıkarma)
-- Görev yorumları
-- SignalR ile gerçek zamanlı güncellemeler
-- Uygulama içi “Nasıl kullanılır?” rehberi
-- Kesim atölyesi esintili açık tema, tamamen Türkçe arayüz
+  subgraph API["TaskTracker.API"]
+    C[Controllers]
+    H[TaskHub]
+  end
 
-## Proje Yapısı
+  subgraph App["TaskTracker.Application"]
+    DTO[DTO & validators]
+    IF[Interfaces]
+  end
 
-```
-├── TaskTracker.slnx
-├── Dockerfile
-├── docker-compose.yml
-├── TaskTracker.API/
-│   ├── Controllers/
-│   ├── Hubs/
-│   ├── Program.cs
-│   └── appsettings.json
-├── TaskTracker.Application/
-│   ├── DTOs/
-│   ├── Interfaces/
-│   ├── Mappings/
-│   ├── Validators/
-│   └── DependencyInjection.cs
-├── TaskTracker.Domain/
-│   ├── Entities/
-│   └── Enums/
-├── TaskTracker.Infrastructure/
-│   ├── Data/
-│   │   ├── Configurations/
-│   │   └── ApplicationDbContext.cs
-│   ├── Services/
-│   └── DependencyInjection.cs
-└── client/
-    ├── src/
-    │   ├── api/        → REST istemcisi
-    │   ├── components/ → UI bileşenleri (Layout, Modal, TaskDetailModal)
-    │   ├── context/    → Auth & Toast context
-    │   ├── hooks/      → SignalR hook
-    │   ├── pages/      → Login, Register, Dashboard, ProjectPage
-    │   └── types.ts    → TypeScript tip tanımları
-    ├── index.html
-    └── vite.config.ts
+  subgraph Domain["TaskTracker.Domain"]
+    E[Entities]
+  end
+
+  subgraph Infra["TaskTracker.Infrastructure"]
+    EF[EF Core]
+    S[Services]
+  end
+
+  DB[(PostgreSQL 17)]
+
+  UI --> REST --> C
+  SR <--> H
+  C --> DTO --> IF
+  C --> S
+  S --> EF --> DB
+  Domain --> App
+  Infra -. implements .-> IF
 ```
 
-## Canlı Demo
+**Bağımlılık yönü:** `API → Application → Domain` ve `Infrastructure → Application → Domain`. Frontend yalnızca REST ve SignalR üzerinden API ile konuşur.
 
-Vercel üzerindeki demo sürümü tarayıcıda çalışır; örnek veriler `localStorage` içinde tutulur ve canlı güncellemeler simüle edilir.
+## Canlı demo
 
-- Demo: `https://nabiz-demo.vercel.app/demo`
-- Örnek hesap: `eren@demo.nabiz.app` / `demo1234`
-- Diğer demo kullanıcıları: `seda@demo.nabiz.app`, `mert@demo.nabiz.app`, `ayse@demo.nabiz.app` (şifre: `demo1234`)
+**https://nabiz-demo.vercel.app/demo**
 
-Demo build'i:
+| Hesap | Şifre |
+| --- | --- |
+| `eren@demo.nabiz.app` | `demo1234` |
+| `seda@demo.nabiz.app` | `demo1234` |
+| `mert@demo.nabiz.app` | `demo1234` |
+| `ayse@demo.nabiz.app` | `demo1234` |
+
+- Demo açıldığında Eren olarak otomatik giriş yapılır.
+- Veriler tarayıcının `localStorage` alanında tutulur; sayfa yenilense de korunur.
+- **Demoyu sıfırla** ile başlangıç verilerine dönülür.
+- Demo build'i: `cd client && npm run build:demo`
+
+## Kurulum
+
+### Gereksinimler
+
+- [.NET SDK 10.0+](https://dotnet.microsoft.com/download)
+- [Node.js 22+](https://nodejs.org)
+- Docker Desktop **veya** PostgreSQL 17
+
+### 1. Depoyu klonla
 
 ```bash
-cd client
-npm run build:demo
+git clone https://github.com/erenpinyall/proje-yonetim-sistemi.git
+cd proje-yonetim-sistemi
 ```
 
-## Nasıl kullanılır?
+### 2. Sırları ayarla
 
-Uygulamanın sol menüsündeki **“Nasıl kullanılır?”** bağlantısı, aynı adımları uygulama içinde de gösterir.
+Depoda gerçek parola veya JWT anahtarı **tutulmaz**. İki seçenek var:
 
-1. **Demoyu aç:** `https://nabiz-demo.vercel.app/demo` adresine git; Eren olarak otomatik giriş yapılır.
-2. **Bir proje seç:** “Projeler” ekranındaki kalıplardan birine gir. Her proje ayrı bir görev panosudur.
-3. **Görev ekle:** **Yeni Görev** ile başlık, açıklama, öncelik ve atanan kişiyi seç.
-4. **Kartı yönet:** Görev kartına tıkla; durumu **Yapılacak → Devam Ediyor → Tamamlandı** olarak değiştir, yorum ekle veya sil.
-5. **Ekibi davet et:** **Üyeler** sekmesinden e-posta ile ekip arkadaşı ekle; yönetici veya üye rolü ver.
-
-Demo verileri tarayıcında saklanır; sayfayı yenilesen de korunur. **Demoyu sıfırla** ile başlangıç verilerine dönebilirsin. Canlı nokta ve “YENİ · AZ ÖNCE” etiketleri, simüle edilen ekip hareketlerini gösterir.
-
-Gerçek API ve SignalR akışı için aşağıdaki kurulumu kullanın.
-
-## Çalıştırma
-
-### API + Veritabanı (Docker ile)
+**Docker ile:** `.env.example` dosyasını `.env` olarak kopyalayıp değerleri doldur.
 
 ```bash
-docker-compose up
+cp .env.example .env
 ```
 
-API varsayılan olarak `http://localhost:8080` üzerinde çalışır, Swagger UI: `http://localhost:8080/swagger`
+```dotenv
+POSTGRES_PASSWORD=guclu-bir-parola
+JWT_KEY=en-az-32-karakterlik-rastgele-bir-anahtar
+```
 
-### API (Lokal, Docker olmadan)
+> `JWT_KEY` en az 32 karakter olmalı. Üretmek için: `openssl rand -base64 48`
 
-PostgreSQL'in çalışıyor olduğundan emin ol, ardından:
+**Lokal API ile:** user-secrets kullan.
 
 ```bash
 cd TaskTracker.API
-dotnet run --urls http://localhost:8080
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Host=localhost;Port=5432;Database=TaskTrackerDb;Username=postgres;Password=guclu-bir-parola"
+dotnet user-secrets set "Jwt:Key" "en-az-32-karakterlik-rastgele-bir-anahtar"
 ```
 
-### Frontend
+### 3. Çalıştır
 
-API çalışırken (8080 portunda), ayrı bir terminalde:
+**Docker Compose (API + PostgreSQL):**
 
 ```bash
+docker compose up --build
+```
+
+- API: http://localhost:8080
+- Swagger: http://localhost:8080/swagger
+- Health: http://localhost:8080/health
+
+**Lokal (Docker olmadan):**
+
+```bash
+# terminal 1 — API
+cd TaskTracker.API
+dotnet run --urls http://localhost:8080
+
+# terminal 2 — frontend
 cd client
 npm install
 npm run dev
 ```
 
-Frontend varsayılan olarak `http://localhost:5173` üzerinde çalışır. `/api` ve `/hubs` istekleri Vite dev server üzerinden `http://localhost:8080` adresine yönlendirilir (proxy).
+- Frontend: http://localhost:5173
+- `/api` ve `/hubs` istekleri Vite proxy ile `http://localhost:8080` adresine gider.
+- API başka bir porttaysa: `TASKTRAKER_API=http://localhost:9090 npm run dev`
 
-> **Not:** Veritabanı tabloları `EnsureCreated` ile uygulama ilk açılışta otomatik oluşturulur.
+> Veritabanı tabloları ilk açılışta `EnsureCreated` ile oluşturulur. Üretim ortamında migration kullanın.
+
+## Konfigürasyon
+
+| Anahtar | Ortam değişkeni | Not |
+| --- | --- | --- |
+| `ConnectionStrings:DefaultConnection` | `ConnectionStrings__DefaultConnection` | PostgreSQL bağlantı dizesi |
+| `Jwt:Key` | `Jwt__Key` | En az 32 karakter |
+| `Jwt:Issuer` | `Jwt__Issuer` | Varsayılan: `TaskTracker.API` |
+| `Jwt:Audience` | `Jwt__Audience` | Varsayılan: `TaskTracker.Client` |
+| `Cors:AllowedOrigins` | `Cors__AllowedOrigins__0`, `__1`, … | Frontend origin'leri; varsayılan `localhost:5173` |
+
+## API
+
+Tüm proje, görev ve yorum endpointleri JWT ister. Swagger üzerinden **Authorize** ile token girerek deneyebilirsin.
+
+| Metot | Yol | Açıklama |
+| --- | --- | --- |
+| `POST` | `/api/auth/register` | Kayıt |
+| `POST` | `/api/auth/login` | Giriş, JWT döner |
+| `GET` | `/api/projects` | Projeleri listele (sayfalama/arama/sıralama) |
+| `GET` | `/api/projects/{id}` | Proje detayı |
+| `POST` | `/api/projects` | Proje oluştur |
+| `DELETE` | `/api/projects/{id}` | Projeyi sil |
+| `POST` | `/api/projects/{id}/members` | Üye ekle |
+| `DELETE` | `/api/projects/{projectId}/members/{memberId}` | Üye çıkar |
+| `GET` | `/api/projects/{projectId}/tasks` | Görevleri listele |
+| `GET` | `/api/projects/{projectId}/tasks/{taskId}` | Görev detayı |
+| `POST` | `/api/projects/{projectId}/tasks` | Görev oluştur |
+| `PATCH` | `/api/projects/{projectId}/tasks/{taskId}` | Görev güncelle |
+| `DELETE` | `/api/projects/{projectId}/tasks/{taskId}` | Görev sil |
+| `GET` | `/api/tasks/{taskId}/comments` | Yorumları listele |
+| `POST` | `/api/tasks/{taskId}/comments` | Yorum ekle |
+| `DELETE` | `/api/tasks/{taskId}/comments/{commentId}` | Yorum sil |
+| `WS` | `/hubs/tasks` | SignalR kanalı |
+
+## Proje yapısı
+
+```text
+├── TaskTracker.API/             # Controller'lar, Program.cs, SignalR Hub
+├── TaskTracker.Application/     # DTO'lar, interface'ler, validator'lar, profiller
+├── TaskTracker.Domain/          # Entity'ler ve enum'lar
+├── TaskTracker.Infrastructure/  # DbContext, EF konfigürasyonları, servisler
+├── client/                      # React + Vite + TypeScript
+│   └── src/
+│       ├── api/                 # REST istemcisi
+│       ├── components/          # Layout, modal, UI parçaları
+│       ├── context/             # Auth & toast
+│       ├── demo/                # localStorage tabanlı demo API
+│       ├── hooks/               # SignalR hook
+│       └── pages/               # Login, Register, Dashboard, Project
+├── docs/preview.webp            # Ekran görüntüsü
+├── .github/workflows/ci.yml     # API + client build
+├── Dockerfile
+└── docker-compose.yml
+```
+
+## Nasıl kullanılır?
+
+1. **Demoyu aç:** [nabiz-demo.vercel.app/demo](https://nabiz-demo.vercel.app/demo) — Eren olarak otomatik giriş yapılır.
+2. **Bir proje seç:** “Projeler” ekranındaki kartlardan birine gir.
+3. **Görev ekle:** **Yeni Görev** ile başlık, açıklama, öncelik ve atanan kişiyi seç.
+4. **Kartı yönet:** Karta tıkla; durumu **Yapılacak → Devam Ediyor → Tamamlandı** yap, yorum ekle veya sil.
+5. **Ekibi davet et:** **Üyeler** sekmesinden e-posta ile üye ekle; Yönetici veya Üye rolü ver.
+
+Uygulamanın sol menüsündeki **“Nasıl kullanılır?”** bağlantısı aynı adımları uygulama içinde de gösterir.
+
+## Güvenlik
+
+- Parola ve JWT anahtarı repoda tutulmaz; `.env` ve user-secrets kullanılır.
+- JWT anahtarı en az 32 karakter olarak doğrulanır.
+- CORS yalnızca yapılandırılan origin'lere izin verir.
+- Demo verileri tarayıcıda kalır; gerçek ödeme, teslimat veya üretim verisi işlenmez.
+- Bir güvenlik açığı bulursan lütfen [SECURITY.md](.github/SECURITY.md) adımlarını izle.
+
+## Katkı
+
+Issue açmadan önce mevcut issue'lara göz at. Değişiklik için:
+
+```bash
+git checkout -b ozellik/kisa-ad
+# değişiklikleri yap
+git commit -m "feat: kisa aciklama"
+git push origin ozellik/kisa-ad
+```
+
+Pull request açtığında CI hem API'yi hem client'ı derler.
+
+---
+
+<div align="center">
+
+**Eren Pinyal** · [GitHub](https://github.com/erenpinyall) · [LinkedIn](https://www.linkedin.com/in/eren-pinyal) · [Portfolyo](https://erenpinyal.com)
+
+</div>

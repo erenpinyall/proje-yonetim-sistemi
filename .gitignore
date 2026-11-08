@@ -18,6 +18,9 @@ obj/
 ## Docker
 docker-compose.override.yml
 
+## Secrets
+.env
+
 ## OS
 .DS_Store
 Thumbs.db

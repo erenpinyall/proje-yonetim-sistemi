@@ -6,12 +6,12 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:8080
-      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=TaskTrackerDb;Username=postgres;Password=***REMOVED***
-      - Jwt__Key=***REMOVED***
-      - Jwt__Issuer=TaskTracker.API
-      - Jwt__Audience=TaskTracker.Client
+      - "ASPNETCORE_ENVIRONMENT=Development"
+      - "ASPNETCORE_URLS=http://+:8080"
+      - "ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=${POSTGRES_DB:-TaskTrackerDb};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}"
+      - "Jwt__Key=${JWT_KEY:?Set JWT_KEY in .env (32+ characters)}"
+      - "Jwt__Issuer=${JWT_ISSUER:-TaskTracker.API}"
+      - "Jwt__Audience=${JWT_AUDIENCE:-TaskTracker.Client}"
     depends_on:
       - db
     restart: unless-stopped
@@ -19,9 +19,9 @@ services:
   db:
     image: postgres:17-alpine
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=***REMOVED***
-      - POSTGRES_DB=TaskTrackerDb
+      - "POSTGRES_USER=${POSTGRES_USER:-postgres}"
+      - "POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}"
+      - "POSTGRES_DB=${POSTGRES_DB:-TaskTrackerDb}"
     ports:
       - "5432:5432"
     volumes:
