@@ -1,8 +1,12 @@
-# Task Tracker
+# Nabız
+
+![Nabız demo panosu](docs/preview.webp)
 
 > **Not:** Bu proje hâlâ geliştirme aşamasındadır.
 
-**ASP.NET Core Web API (.NET 10)** ile **Clean Architecture** prensiplerine uygun olarak geliştirilmiş, **React + Vite** frontend'e sahip bir Görev/Proje Yönetim Sistemi.
+**Nabız**, küçük ekipler için canlı bir proje ve görev panosudur. **ASP.NET Core Web API (.NET 10)** ile **Clean Architecture** prensiplerine uygun olarak geliştirilmiş, **React + Vite** frontend'e sahiptir.
+
+> Kod içindeki `TaskTracker.*` namespace ve proje adları geriye dönük uyumluluk için korunmuştur; kullanıcıya görünen ürün adı **Nabız**'dır.
 
 ## Tech Stack
 
@@ -67,7 +71,8 @@ Frontend (React) → API (REST + SignalR)
 - Üye yönetimi (ekleme/çıkarma)
 - Görev yorumları
 - SignalR ile gerçek zamanlı güncellemeler
-- Modern koyu tema, tamamen Türkçe arayüz
+- Uygulama içi “Nasıl kullanılır?” rehberi
+- Kesim atölyesi esintili açık tema, tamamen Türkçe arayüz
 
 ## Proje Yapısı
 
@@ -106,6 +111,35 @@ Frontend (React) → API (REST + SignalR)
     ├── index.html
     └── vite.config.ts
 ```
+
+## Canlı Demo
+
+Vercel üzerindeki demo sürümü tarayıcıda çalışır; örnek veriler `localStorage` içinde tutulur ve canlı güncellemeler simüle edilir.
+
+- Demo: `https://nabiz-demo.vercel.app/demo`
+- Örnek hesap: `eren@demo.nabiz.app` / `demo1234`
+- Diğer demo kullanıcıları: `seda@demo.nabiz.app`, `mert@demo.nabiz.app`, `ayse@demo.nabiz.app` (şifre: `demo1234`)
+
+Demo build'i:
+
+```bash
+cd client
+npm run build:demo
+```
+
+## Nasıl kullanılır?
+
+Uygulamanın sol menüsündeki **“Nasıl kullanılır?”** bağlantısı, aynı adımları uygulama içinde de gösterir.
+
+1. **Demoyu aç:** `https://nabiz-demo.vercel.app/demo` adresine git; Eren olarak otomatik giriş yapılır.
+2. **Bir proje seç:** “Projeler” ekranındaki kalıplardan birine gir. Her proje ayrı bir görev panosudur.
+3. **Görev ekle:** **Yeni Görev** ile başlık, açıklama, öncelik ve atanan kişiyi seç.
+4. **Kartı yönet:** Görev kartına tıkla; durumu **Yapılacak → Devam Ediyor → Tamamlandı** olarak değiştir, yorum ekle veya sil.
+5. **Ekibi davet et:** **Üyeler** sekmesinden e-posta ile ekip arkadaşı ekle; yönetici veya üye rolü ver.
+
+Demo verileri tarayıcında saklanır; sayfayı yenilesen de korunur. **Demoyu sıfırla** ile başlangıç verilerine dönebilirsin. Canlı nokta ve “YENİ · AZ ÖNCE” etiketleri, simüle edilen ekip hareketlerini gösterir.
+
+Gerçek API ve SignalR akışı için aşağıdaki kurulumu kullanın.
 
 ## Çalıştırma
 

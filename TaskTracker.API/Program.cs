@@ -51,7 +51,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
-builder.Services.AddSignalR();
+builder.Services.AddSignalR()
+    .AddJsonProtocol(options =>
+    {
+        // REST ile aynı sözleşme: enum'lar sayı değil metin olarak gitsin.
+        options.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 
 builder.Services.AddCors(options =>
 {
@@ -65,7 +70,7 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "Task Tracker API",
+        Title = "Nabız API",
         Version = "v1",
         Description = "A Task/Project Management System API"
     });
@@ -100,7 +105,7 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Task Tracker API V1");
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Nabız API V1");
 });
 
 app.UseCors("AllowAll");

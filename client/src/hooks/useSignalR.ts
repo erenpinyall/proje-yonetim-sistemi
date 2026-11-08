@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import * as signalR from '@microsoft/signalr'
 import { getToken } from '../api/client'
+import { DEMO_MODE, demoBus } from '../demo/bus'
 import type { TaskItemDto, CommentDto } from '../types'
 
 interface HubEvents {
@@ -13,10 +14,27 @@ interface HubEvents {
 export function useSignalR(projectId?: string, events?: HubEvents) {
   const [connected, setConnected] = useState(false)
   const connectionRef = useRef<signalR.HubConnection | null>(null)
+  const projectIdRef = useRef(projectId)
+  projectIdRef.current = projectId
   const eventsRef = useRef(events)
   eventsRef.current = events
 
   useEffect(() => {
+    if (DEMO_MODE) {
+      const unsubscribers = [
+        demoBus.on('TaskCreated', (task) => eventsRef.current?.onTaskCreated?.(task)),
+        demoBus.on('TaskUpdated', (task) => eventsRef.current?.onTaskUpdated?.(task)),
+        demoBus.on('TaskDeleted', (taskId) => eventsRef.current?.onTaskDeleted?.(taskId)),
+        demoBus.on('NewComment', (comment) => eventsRef.current?.onNewComment?.(comment)),
+      ]
+      setConnected(true)
+      return () => {
+        unsubscribers.forEach((unsubscribe) => unsubscribe())
+      }
+    }
+
+    let disposed = false
+
     const connection = new signalR.HubConnectionBuilder()
       .withUrl('/hubs/tasks', {
         accessTokenFactory: () => getToken() ?? '',
@@ -32,29 +50,58 @@ export function useSignalR(projectId?: string, events?: HubEvents) {
 
     connectionRef.current = connection
 
-    connection
+    const joinProjectGroup = async () => {
+      const projectId = projectIdRef.current
+      if (!projectId) return
+      try {
+        await connection.invoke('JoinProjectGroup', projectId)
+      } catch {
+        // bağlantı henüz hazır değilse yeniden bağlanmada tekrar denenir
+      }
+    }
+
+    connection.onreconnecting(() => {
+      if (!disposed) setConnected(false)
+    })
+
+    connection.onreconnected(() => {
+      if (disposed) return
+      setConnected(true)
+      void joinProjectGroup()
+    })
+
+    connection.onclose(() => {
+      if (!disposed) setConnected(false)
+    })
+
+    // StrictMode ilk effect'i hemen temizliyor; negotiate sırasında stop()
+    // çağırmak "connection was stopped during negotiation" hatası üretiyordu.
+    // Bu yüzden durdurmayı start() sonuçlandıktan sonraya erteliyoruz.
+    const started = connection
       .start()
-      .then(() => setConnected(true))
-      .catch(() => setConnected(false))
+      .then(() => {
+        if (disposed) return
+        setConnected(true)
+        return joinProjectGroup()
+      })
+      .catch(() => {
+        if (!disposed) setConnected(false)
+      })
 
     return () => {
-      void connection.stop()
-      connectionRef.current = null
+      disposed = true
+      if (connectionRef.current === connection) connectionRef.current = null
+      void started.finally(() => {
+        void connection.stop()
+      })
     }
   }, [])
 
   useEffect(() => {
-    const conn = connectionRef.current
-    if (!conn || !projectId || conn.state !== signalR.HubConnectionState.Connected) return
-
-    void conn.invoke('JoinProjectGroup', projectId).catch(() => {})
-
-    return () => {
-      if (conn.state === signalR.HubConnectionState.Connected) {
-        void conn.invoke('LeaveProjectGroup', projectId).catch(() => {})
-      }
-    }
-  }, [projectId, connected])
+    if (!DEMO_MODE || !projectId) return
+    demoBus.setActiveProject(projectId)
+    return () => demoBus.setActiveProject(null)
+  }, [projectId])
 
   return { connected }
 }

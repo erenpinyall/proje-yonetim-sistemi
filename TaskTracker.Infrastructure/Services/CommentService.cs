@@ -70,6 +70,8 @@ public class CommentService : ICommentService
         _context.Comments.Add(comment);
         await _context.SaveChangesAsync();
 
+        await _context.Entry(comment).Reference(c => c.User).LoadAsync();
+
         return _mapper.Map<CommentDto>(comment);
     }
 

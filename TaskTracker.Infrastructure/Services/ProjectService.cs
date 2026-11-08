@@ -111,9 +111,10 @@ public class ProjectService : IProjectService
         if (project.Members.Any(m => m.UserId == user.Id))
             throw new InvalidOperationException("User is already a member");
 
-        project.Members.Add(new ProjectMember
+        // DbSet üzerinden ekle: mevcut bir projenin koleksiyonuna eklenen
+        // entity, dolu anahtar yüzünden EF tarafından "Modified" sanılıyordu.
+        _context.ProjectMembers.Add(new ProjectMember
         {
-            Id = Guid.NewGuid(),
             ProjectId = projectId,
             UserId = user.Id,
             Role = dto.Role

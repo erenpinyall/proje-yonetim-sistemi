@@ -4,6 +4,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { ApiError } from '../api/client'
+import { AuthLayout } from '../components/AuthLayout'
+import { Icon } from '../components/ui'
 
 export default function RegisterPage() {
   const { register } = useAuth()
@@ -32,81 +34,68 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="auth-page">
-      <div className="auth-hero">
-        <h1>
-          Projelerini tek yerden <span>yönet.</span>
-        </h1>
-        <p>
-          Görevleri planla, ekip üyelerini davet et, ilerlemeyi gerçek zamanlı takip et. TaskTracker ile
-          projelerin hep yolunda.
-        </p>
-        <div className="auth-features">
-          <div className="auth-feature">
-            <span className="icon">📋</span> Kanban tarzı görev panoları
+    <AuthLayout>
+      <div className="auth-card">
+        <div className="auth-kicker">KAYIT · YENİ KALIP</div>
+        <h2>Hesap oluştur</h2>
+        <p className="subtitle">Birkaç saniyede başla, ilk panonu kur.</p>
+
+        {error && (
+          <div className="error-banner" role="alert">
+            <Icon name="alert" size={16} />
+            <span>{error}</span>
           </div>
-          <div className="auth-feature">
-            <span className="icon">👥</span> Ekip üyeleri ve rol yönetimi
+        )}
+
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="username">Kullanıcı adı</label>
+            <input
+              id="username"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Kullanıcı adın"
+              autoComplete="nickname"
+              minLength={3}
+              maxLength={50}
+              required
+            />
           </div>
-          <div className="auth-feature">
-            <span className="icon">⚡</span> Gerçek zamanlı güncellemeler
+          <div className="form-group">
+            <label htmlFor="email">E-posta</label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="ornek@mail.com"
+              autoComplete="email"
+              required
+            />
           </div>
-          <div className="auth-feature">
-            <span className="icon">💬</span> Görev üzerinde yorumlar
+          <div className="form-group">
+            <label htmlFor="password">Şifre</label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="En az 6 karakter"
+              autoComplete="new-password"
+              minLength={6}
+              required
+            />
           </div>
+          <button className="btn btn-primary btn-block" type="submit" disabled={loading}>
+            {loading ? <span className="spinner" /> : 'Kayıt Ol'}
+          </button>
+        </form>
+
+        <div className="auth-switch">
+          Zaten hesabın var mı? <Link to="/login">Giriş yap</Link>
         </div>
       </div>
-      <div className="auth-panel">
-        <div className="auth-card">
-          <h2>Hesap oluştur</h2>
-          <p className="subtitle">Birkaç saniyede başla</p>
-          {error && <div className="error-banner">{error}</div>}
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label htmlFor="username">Kullanıcı adı</label>
-              <input
-                id="username"
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Kullanıcı adın"
-                minLength={3}
-                maxLength={50}
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="email">E-posta</label>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="ornek@mail.com"
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="password">Şifre</label>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="En az 6 karakter"
-                minLength={6}
-                required
-              />
-            </div>
-            <button className="btn btn-primary btn-block" type="submit" disabled={loading}>
-              {loading ? <span className="spinner" /> : 'Kayıt Ol'}
-            </button>
-          </form>
-          <div className="auth-switch">
-            Zaten hesabın var mı? <Link to="/login">Giriş yap</Link>
-          </div>
-        </div>
-      </div>
-    </div>
+    </AuthLayout>
   )
 }

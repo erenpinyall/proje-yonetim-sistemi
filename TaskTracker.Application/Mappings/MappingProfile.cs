@@ -24,6 +24,6 @@ public class MappingProfile : Profile
             .ForMember(d => d.CommentCount, o => o.MapFrom(s => s.Comments.Count));
 
         CreateMap<Comment, CommentDto>()
-            .ForMember(d => d.Username, o => o.MapFrom(s => s.User.Username));
+            .ForMember(d => d.Username, o => o.MapFrom(s => s.User != null ? s.User.Username : null));
     }
 }
