@@ -46,13 +46,13 @@ Frontend (React) → API (REST + SignalR)
 
 ### Projeler
 - Proje oluşturma, listeleme, detay görüntüleme, silme
-- Rol tabanlı üye ekleme/çıkarma (Admin/Member)
+- Rol tabanlı üye ekleme/çıkarma (Yönetici/Üye)
 - Sayfalama, arama ve sıralama
 
 ### Görevler
-- Görev oluşturma, güncelleme, silme (To Do / In Progress / Done)
+- Görev oluşturma, güncelleme, silme (Yapılacak / Devam Ediyor / Tamamlandı)
 - Proje üyelerine görev atama
-- Öncelik seviyeleri (Low / Medium / High)
+- Öncelik seviyeleri (Düşük / Orta / Yüksek)
 - Filtreleme, sayfalama ve sıralama
 
 ### Yorumlar
