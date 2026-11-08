@@ -27,6 +27,7 @@ Küçük ekipler için kurulum ve süreç yükü olmayan, kanban panosu ile canl
 - SignalR üzerinden görev oluşturma/güncelleme/silme ve yeni yorum anlık bildirilir.
 - Oturum JWT ile taşınır; token tarayıcıda saklanır. API .NET 10, veritabanı PostgreSQL.
 - Arayüz şu an tek sayfa uygulaması: giriş, kayıt, proje listesi (dashboard), proje detayı (görev panosu + üyeler) ve görev detayı modalı.
+- Demo sürümü `/demo` yolunda otomatik giriş yapar; veriler `localStorage`'da tutulur, mock API ve simüle SignalR kullanılır. Uygulama içi **Nasıl kullanılır?** rehberi dört temel akışı anlatır.
 
 ## Capabilities and Constraints
 

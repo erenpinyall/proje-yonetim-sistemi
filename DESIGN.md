@@ -215,6 +215,7 @@ Dikiş çizgileri yatay ve dikey akabilir; rail'in sağ kenarında ve pano başl
 
 ### Navigation
 - **Style:** 236px koyu mürekkep rail, tebeşir metin, sağ kenarda akan kırmızı dikiş. Aktif bağlantı kırmızı iplik işareti taşır.
+- **Help entry:** Rail'de **Projeler**'in altında info ikonlu **Nasıl kullanılır?** düğmesi; mobilde rail gizlendiği için canlı panelde ikon-only yardım düğmesi kalır.
 - **Mobile:** 980px altında üst yatay çubuk; 560px altında marka metni, canlı etiketi ve kullanıcı adı gizlenir, yalnızca ikonlar ve canlı durum noktası kalır.
 
 ### Signature: Live Thread
@@ -226,6 +227,7 @@ Dikiş çizgileri yatay ve dikey akabilir; rail'in sağ kenarında ve pano başl
 - **Shape:** 3px yarıçap, 1.5px mürekkep kontur, 8px iç dashed çerçeve, 24px (geniş föyde 26px) iç boşluk.
 - **Depth:** föy gölgesi; arka plan `rgba(20,24,28,0.55)` perde.
 - **Behavior:** açılışta odak modala girer, Tab/Shift+Tab odak tuzağında kalır, Esc kapatır; görev föyünde durum/öncelik/atanan seçicileri görünür etiketlidir.
+- **How-to:** **Nasıl kullanılır?** modalı numaralı dört adım, demo notu ve tek **Anladım** eylemi kullanır; adımlar kart içine kart koymadan dashed dikişlerle ayrılır.
 
 ## Do's and Don'ts
 
